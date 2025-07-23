@@ -6,31 +6,36 @@
   <style>
     #map { height: 600px; }
   </style>
+
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
 </head>
 <body>
   <h2>US Airports Map</h2>
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 
   <script>
-    // Initialize the map centered on the US
     const map = L.map('map').setView([37.8, -96], 4);
 
-    // Add OpenStreetMap tiles
+  
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Load CSV and create markers and a line
+    const markers = L.markerClusterGroup();
+
     Papa.parse('airports.csv', {
       header: true,
       download: true,
       complete: function(results) {
-        console.log(results.data); // Debug
-
         const airportCoords = [];
 
         results.data.forEach(row => {
@@ -41,17 +46,18 @@
           const state = row.STATE;
 
           if (!isNaN(lat) && !isNaN(lon)) {
-            // Add marker
-            L.marker([lat, lon]).addTo(map)
+            const marker = L.marker([lat, lon])
               .bindPopup(`<b>${name}</b><br>${city}, ${state}`);
 
-            // Collect coordinate
+            markers.addLayer(marker);
+
             airportCoords.push([lat, lon]);
           }
         });
 
-        // Draw polyline connecting all airports
-        L.polyline(airportCoords, {color: 'red'}).addTo(map);
+        map.addLayer(markers);
+
+ 
       }
     });
   </script>

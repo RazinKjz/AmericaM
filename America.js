@@ -14,16 +14,13 @@ Papa.parse('airports.csv', {
       const state = row.STATE;
 
       if (!isNaN(lat) && !isNaN(lon)) {
-        // Add marker
         L.marker([lat, lon]).addTo(map)
           .bindPopup(`<b>${name}</b><br>${city}, ${state}`);
         
-        // Collect coordinate
         airportCoords.push([lat, lon]);
       }
     });
 
-    // Draw polyline connecting all airports
-    L.polyline(airportCoords, {color: 'red'}).addTo(map);
+
   }
 });
